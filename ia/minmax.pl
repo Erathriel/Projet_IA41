@@ -75,3 +75,5 @@ evaluation(Plateau,Res):-mesCases(1,Plateau,[A1,B1,C1,D1]),
                          moyenneDistancesTousLesPoints(A1,B1,C1,D1,R1),
                          moyenneDistancesTousLesPoints(A2,B2,C2,D2,R2),
                          Res is R2-R1.
+                         
+deplacementPossible(Joueur,PlateauActuel,PlateauApres):-.
