@@ -136,12 +136,35 @@ deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCase
                                                                list_to_set(Lg,Lh),
                                                                deplacementsPossibles2(PlateauActuel,Lh,ListeDeplacementsPossibles).
 
-/* permet de reduire la liste uniquement aux cases libres */
-%deplacementsPossibles(+PlateauActuel,+ListeTousDepl,?ListeDeplacementsPossiblesSiCaseLibre)
 deplacementsPossibles2(_,[],[]).
-deplacementsPossibles2(PlateauActuel,[T|R],L):-quelNumDansCase(T,PlateauActuel,QNDC),
-                                               QNDC\=0,
-                                               deplacementsPossibles2(PlateauActuel,R,L).
-deplacementsPossibles2(PlateauActuel,[T|R],[T|R2]):-quelNumDansCase(T,PlateauActuel,QNDC),
-                                                    QNDC==0,
-                                                    deplacementsPossibles2(PlateauActuel,R,R2).
+deplacementsPossibles2(PlateauActuel,[T|R],L):-quelNumDansCase(T,PlateauActuel,QNDC),QNDC\=0,deplacementsPossibles2(PlateauActuel,R,L).
+deplacementsPossibles2(PlateauActuel,[T|R],[T|R2]):-quelNumDansCase(T,PlateauActuel,QNDC),QNDC==0,deplacementsPossibles2(PlateauActuel,R,R2).
+
+/* Transfère contenu d'une case à une autre (simule mouvement pion) */
+effectuerUnDeplacement(PlateauActuel,CaseAvant,CaseApres,PlateauApres):-quelNumDansCase(CaseAvant,PlateauActuel,A), effectuerUnDeplacement(PlateauActuel,CaseAvant,CaseApres,PlateauApres,A,1).
+effectuerUnDeplacement([],_,_,[],_,_).
+effectuerUnDeplacement([_|R],CaseAvant,CaseApres,[0|R2],A,I):-I==CaseAvant, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
+effectuerUnDeplacement([_|R],CaseAvant,CaseApres,[A|R2],A,I):-I==CaseApres, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
+effectuerUnDeplacement([T|R],CaseAvant,CaseApres,[T|R2],A,I):-I\=CaseAvant, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
+effectuerUnDeplacement([T|R],CaseAvant,CaseApres,[T|R2],A,I):-I\=CaseApres, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
+
+effectuerDeplacementsPourUneCase(PlateauActuel,NCase,LesPlateauxApres):-possibiliteDeplacerPion(NCase,Poss),effectuerDeplacementsPourUneCase(PlateauActuel,NCase,LesPlateauxApres,Poss).
+effectuerDeplacementsPourUneCase(_,_,[],[]).
+effectuerDeplacementsPourUneCase(PlateauActuel,NCase,[T|R],[T2|R2]):-quelNumDansCase(T2,PlateauActuel,0),effectuerUnDeplacement(PlateauActuel,NCase,T2,T),effectuerDeplacementsPourUneCase(PlateauActuel,NCase,R,R2).
+effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,[T2|R2]):-quelNumDansCase(T2,PlateauActuel,Z),Z\=0,effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,R2).
+
+
+effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases(Joueur,PlateauActuel,L),
+                                                                        effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres,L).
+effectuerTousLesDeplacementsJoueur(_,_,[],[]).
+effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[PT|PR],[LT|LR]):-effectuerDeplacementsPourUneCase(PlateauActuel,LT,PT),effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PR,LR).
+
+/* concatener([[[1,2],[2,3]],[[7,8],[8,9]]],L)
+     =>    L = [[1, 2], [2, 3], [7, 8], [8, 9]].
+
+
+     Il faudra l'appliquer à effectuerTousLesDeplacementsJoueur
+
+     AAAAAAAAAAAAAA FAIRE
+*/
+concatener([T|R],L):-append(T,R,L).
