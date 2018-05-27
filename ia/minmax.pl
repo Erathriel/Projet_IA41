@@ -148,12 +148,14 @@ effectuerUnDeplacement([_|R],CaseAvant,CaseApres,[A|R2],A,I):-I==CaseApres, I2 i
 effectuerUnDeplacement([T|R],CaseAvant,CaseApres,[T|R2],A,I):-I\=CaseAvant, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
 effectuerUnDeplacement([T|R],CaseAvant,CaseApres,[T|R2],A,I):-I\=CaseApres, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
 
+/* Retourne les plateaux après avoir fait les déplacements possibles en partant d'une case */
 effectuerDeplacementsPourUneCase(PlateauActuel,NCase,LesPlateauxApres):-possibiliteDeplacerPion(NCase,Poss),effectuerDeplacementsPourUneCase(PlateauActuel,NCase,LesPlateauxApres,Poss).
 effectuerDeplacementsPourUneCase(_,_,[],[]).
 effectuerDeplacementsPourUneCase(PlateauActuel,NCase,[T|R],[T2|R2]):-quelNumDansCase(T2,PlateauActuel,0),effectuerUnDeplacement(PlateauActuel,NCase,T2,T),effectuerDeplacementsPourUneCase(PlateauActuel,NCase,R,R2).
 effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,[T2|R2]):-quelNumDansCase(T2,PlateauActuel,Z),Z\=0,effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,R2).
 
-
+/* Retourne tous les plateaux possibles qu'un joueur peut obtenir à un moment donné
+A utiliser pour l'algo MinValue et MaxValue (cf. diapo IA41 CM6) */
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases(Joueur,PlateauActuel,L),
                                                                         effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,X,L),
                                                                         append(X,PlateauxApres).
