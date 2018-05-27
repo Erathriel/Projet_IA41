@@ -155,16 +155,7 @@ effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,[T2|R2]):-quelNumDansCase
 
 
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases(Joueur,PlateauActuel,L),
-                                                                        effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres,L).
+                                                                        effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,X,L),
+                                                                        append(X,PlateauxApres).
 effectuerTousLesDeplacementsJoueur(_,_,[],[]).
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[PT|PR],[LT|LR]):-effectuerDeplacementsPourUneCase(PlateauActuel,LT,PT),effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PR,LR).
-
-/* concatener([[[1,2],[2,3]],[[7,8],[8,9]]],L)
-     =>    L = [[1, 2], [2, 3], [7, 8], [8, 9]].
-
-
-     Il faudra l'appliquer à effectuerTousLesDeplacementsJoueur
-
-     AAAAAAAAAAAAAA FAIRE
-*/
-concatener([T|R],L):-append(T,R,L).
