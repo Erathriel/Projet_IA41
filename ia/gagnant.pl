@@ -1,16 +1,17 @@
-% numéro des cases :
+% numï¿½ro des cases :
 %	  1  2  3  4  5
 % 	  6  7  8  9 10
 %	 11 12 13 14 15
 %	 16 17 18 19 20
 %	 21 22 23 24 25
 
-% gagnant(+P1,+P2,+P3,+P4) 
-% les points doivent être dans l'ordre croissant
+/* true si configuration gagnante */
+% gagnant(+P1,+P2,+P3,+P4)
+% les points doivent ï¿½tre dans l ordre croissant
 
 gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_horizontal(A,B,C,D).				% ex : 10 8 9 7
-gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_vertical(A,B,C,D).				% ex : 14 19 9 4 
-gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_diagonale_descendante(A,B,C,D).			% ex : 7 1 19 13		
+gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_vertical(A,B,C,D).				% ex : 14 19 9 4
+gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_diagonale_descendante(A,B,C,D).			% ex : 7 1 19 13
 gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_diagonale_montante(A,B,C,D).			% ex : 21 13 9 17
 gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_carre(A,B,C,D).					% ex : 11 16 17 12
 

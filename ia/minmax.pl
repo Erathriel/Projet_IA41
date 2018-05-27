@@ -7,6 +7,10 @@
 %	 16 17 18 19 20
 %	 21 22 23 24 25
 
+/* Regarde quel joueur est dans la case donnée
+0 si libre
+1 si joueur 1
+2 si joueur 2 */
 % quelNumDansCase(+NCase,+Plateau,?Res) Plateau est une liste
 
 quelNumDansCase(NCase,Plateau,Res):- quelNumDansCase(NCase,Plateau,Res,1).
@@ -15,18 +19,20 @@ quelNumDansCase(NCase,[_|R],Res,I):- I<NCase, I2 is I+1, quelNumDansCase(NCase,R
 
 
 
-
+/* Retourne les indices d'un numero joueur donné /!\ pb
 indexOf([NumJoueur|_], NumJoueur, 1).
-indexOf([_|Tail], NumJoueur, Index):- indexOf(Tail, NumJoueur, Index1), Index is Index1+1.  % and increment the resulting index
+indexOf([_|Tail], NumJoueur, Index):- indexOf(Tail, NumJoueur, Index1), Index is Index1+1.  % and increment the resulting index */
 
+/* Retourne les 4 indices des cases d'joueur donné */
 mesCases(Joueur,Plateau,[A,B,C,D]):-mesCases(Joueur,Plateau,[A,B,C,D|_],0).
 mesCases(_,[],_,_).
 mesCases(Joueur,[T|R],R2,I):-T\=Joueur, I2 is I+1, mesCases(Joueur,R,R2,I2).
 mesCases(Joueur,[T|R],[I2|R2],I):-T==Joueur, I2 is I+1, mesCases(Joueur,R,R2,I2).
 
-
+/* Vrai si un joueur donné a une configuration gagnante dans le plateau donné */
 joueurGagnant(Plateau,Joueur):-mesCases(Joueur,Plateau,[A,B,C,D]), gagnant(A,B,C,D).
 
+/* COnvertis un numéro de case en coordonnées x et y */
 coord(1,1,1).
 coord(2,1,2).
 coord(3,1,3).
@@ -53,9 +59,10 @@ coord(23,5,3).
 coord(24,5,4).
 coord(25,5,5).
 
-
+/* Res est la distance entre les points données A et B */
 dist2Points(A,B,Res):-coord(A,Xa,Ya),coord(B,Xb,Yb), Res is sqrt((Xb-Xa)*(Xb-Xa)+(Yb-Ya)*(Yb-Ya)).
 
+/* Retourne la distance moyenne entre 4 cases  */
 moyenneDistancesTousLesPoints(A,B,C,D,R):-dist2Points(A,B,R1),
                                           dist2Points(A,C,R2),
                                           dist2Points(A,D,R3),
@@ -65,15 +72,78 @@ moyenneDistancesTousLesPoints(A,B,C,D,R):-dist2Points(A,B,R1),
                                           R7 is R1+R2+R3+R4+R5+R6,
                                           R is R7/6.
 
-%plateau exemple : [1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0]
+/* plateau exemple : [1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0]
+1 1 1 0 2
+1 0 0 0 2
+2 0 0 2 0
+0 0 0 0 0
+0 0 0 0 0
+*/
 
+/* Res est la distance moyenne entre les 4 cases d'un joueur  */
 evaluationJoueur(Joueur,Plateau,Res):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
                          moyenneDistancesTousLesPoints(A1,B1,C1,D1,Res).
 
+/* fonction evaluation ???? */
 evaluation(Plateau,Res):-mesCases(1,Plateau,[A1,B1,C1,D1]),
                          mesCases(2,Plateau,[A2,B2,C2,D2]),
                          moyenneDistancesTousLesPoints(A1,B1,C1,D1,R1),
                          moyenneDistancesTousLesPoints(A2,B2,C2,D2,R2),
                          Res is R2-R1.
-                         
-deplacementPossible(Joueur,PlateauActuel,PlateauApres):-.
+
+/* Donne les cases adjacentes où un pion peut bouger */
+possibiliteDeplacerPion(1,[2,6,7]).
+possibiliteDeplacerPion(2,[1,3,6,7,8]).
+possibiliteDeplacerPion(3,[2,4,7,8,9]).
+possibiliteDeplacerPion(4,[3,5,8,9,10]).
+possibiliteDeplacerPion(5,[4,9,10]).
+possibiliteDeplacerPion(6,[1,2,7,11,12]).
+possibiliteDeplacerPion(7,[1,2,3,7,8,11,12,13]).
+possibiliteDeplacerPion(8,[2,3,4,7,9,12,13,14]).
+possibiliteDeplacerPion(9,[3,4,5,8,10,13,14,15]).
+possibiliteDeplacerPion(10,[4,5,9,14,15]).
+possibiliteDeplacerPion(11,[6,7,12,16,17]).
+possibiliteDeplacerPion(12,[6,7,8,11,13,16,17,18]).
+possibiliteDeplacerPion(13,[7,8,9,12,14,17,18,19]).
+possibiliteDeplacerPion(14,[8,9,10,13,15,18,19,20]).
+possibiliteDeplacerPion(15,[9,10,14,19,20]).
+possibiliteDeplacerPion(16,[11,12,17,21,22]).
+possibiliteDeplacerPion(17,[11,12,13,16,18,21,22,23]).
+possibiliteDeplacerPion(18,[12,13,14,17,19,22,23,24]).
+possibiliteDeplacerPion(19,[13,14,15,18,20,23,24,25]).
+possibiliteDeplacerPion(20,[14,15,19,24,25]).
+possibiliteDeplacerPion(21,[16,17,22]).
+possibiliteDeplacerPion(22,[16,17,18,21,23]).
+possibiliteDeplacerPion(23,[17,18,19,22,23]).
+possibiliteDeplacerPion(24,[18,19,20,23,25]).
+possibiliteDeplacerPion(25,[19,20,24]).
+
+/* Transforme une liste en une liste sans récurrence */
+list_to_set(L1,L2):-list_to_set(L1,L2,[]).
+list_to_set([],[],_).
+list_to_set([X|R1],L,T):-member(X,T),!,list_to_set(R1,L,T).
+list_to_set([X|R1],[X|R2],T):-append(T,[X],T1),list_to_set(R1,R2,T1).
+
+/* donne pour le moment toutes les cases où le joueur aura la possibilité de se déplacer
+TODO ne laisser que les cases libres (valeur = à 0)*/
+deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCases(Joueur,PlateauActuel,[A,B,C,D]),
+                                                               possibiliteDeplacerPion(A,La),
+                                                               possibiliteDeplacerPion(B,Lb),
+                                                               possibiliteDeplacerPion(C,Lc),
+                                                               possibiliteDeplacerPion(D,Ld),
+                                                               append(La,Lb,Le),
+                                                               append(Le,Lc,Lf),
+                                                               append(Lf,Ld,Lg),
+                                                               list_to_set(Lg,Lf),
+                                                               deplacementsPossibles2(PlateauActuel,Lf,ListeDeplacementsPossibles).
+
+/* permet de reduire la liste uniquement aux cases libres
+FONCTIONNE PRESQUE MAIS RAJOUTE LA LISTE RESULTAT AVEC QQCH D INCONNU */
+%deplacementsPossibles(+PlateauActuel,+ListeTousDepl,?ListeDeplacementsPossiblesSiCaseLibre)
+deplacementsPossibles2(_,[],_).
+deplacementsPossibles2(PlateauActuel,[T|R],L):-quelNumDansCase(T,PlateauActuel,QNDC),
+                                               QNDC\=0,
+                                               deplacementsPossibles2(PlateauActuel,R,L).
+deplacementsPossibles2(PlateauActuel,[T|R],[T|R2]):-quelNumDansCase(T,PlateauActuel,QNDC),
+                                                    QNDC==0,
+                                                    deplacementsPossibles2(PlateauActuel,R,R2).
