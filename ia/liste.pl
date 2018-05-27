@@ -52,3 +52,26 @@ coord(22,5,2).
 coord(23,5,3).
 coord(24,5,4).
 coord(25,5,5).
+
+
+dist2Points(A,B,Res):-coord(A,Xa,Ya),coord(B,Xb,Yb), Res is sqrt((Xb-Xa)*(Xb-Xa)+(Yb-Ya)*(Yb-Ya)).
+
+moyenneDistancesTousLesPoints(A,B,C,D,R):-dist2Points(A,B,R1),
+                                          dist2Points(A,C,R2),
+                                          dist2Points(A,D,R3),
+                                          dist2Points(B,C,R4),
+                                          dist2Points(B,D,R5),
+                                          dist2Points(C,D,R6),
+                                          R7 is R1+R2+R3+R4+R5+R6,
+                                          R is R7/6.
+
+%plateau exemple : [1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0]
+
+evaluationJoueur(Joueur,Plateau,Res):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
+                         moyenneDistancesTousLesPoints(A1,B1,C1,D1,Res).
+
+evaluation(Plateau,Res):-mesCases(1,Plateau,[A1,B1,C1,D1]),
+                         mesCases(2,Plateau,[A2,B2,C2,D2]),
+                         moyenneDistancesTousLesPoints(A1,B1,C1,D1,R1),
+                         moyenneDistancesTousLesPoints(A2,B2,C2,D2,R2),
+                         Res is R2-R1.
