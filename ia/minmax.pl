@@ -124,8 +124,7 @@ list_to_set([],[],_).
 list_to_set([X|R1],L,T):-member(X,T),!,list_to_set(R1,L,T).
 list_to_set([X|R1],[X|R2],T):-append(T,[X],T1),list_to_set(R1,R2,T1).
 
-/* donne pour le moment toutes les cases où le joueur aura la possibilité de se déplacer
-TODO ne laisser que les cases libres (valeur = à 0)*/
+/* donne pour le moment toutes les cases où le joueur aura la possibilité de se déplacer */
 deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCases(Joueur,PlateauActuel,[A,B,C,D]),
                                                                possibiliteDeplacerPion(A,La),
                                                                possibiliteDeplacerPion(B,Lb),
@@ -134,13 +133,12 @@ deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCase
                                                                append(La,Lb,Le),
                                                                append(Le,Lc,Lf),
                                                                append(Lf,Ld,Lg),
-                                                               list_to_set(Lg,Lf),
-                                                               deplacementsPossibles2(PlateauActuel,Lf,ListeDeplacementsPossibles).
+                                                               list_to_set(Lg,Lh),
+                                                               deplacementsPossibles2(PlateauActuel,Lh,ListeDeplacementsPossibles).
 
-/* permet de reduire la liste uniquement aux cases libres
-FONCTIONNE PRESQUE MAIS RAJOUTE LA LISTE RESULTAT AVEC QQCH D INCONNU */
+/* permet de reduire la liste uniquement aux cases libres */
 %deplacementsPossibles(+PlateauActuel,+ListeTousDepl,?ListeDeplacementsPossiblesSiCaseLibre)
-deplacementsPossibles2(_,[],_).
+deplacementsPossibles2(_,[],[]).
 deplacementsPossibles2(PlateauActuel,[T|R],L):-quelNumDansCase(T,PlateauActuel,QNDC),
                                                QNDC\=0,
                                                deplacementsPossibles2(PlateauActuel,R,L).
