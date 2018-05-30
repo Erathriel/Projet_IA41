@@ -161,3 +161,13 @@ effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases
                                                                         append(X,PlateauxApres).
 effectuerTousLesDeplacementsJoueur(_,_,[],[]).
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[PT|PR],[LT|LR]):-effectuerDeplacementsPourUneCase(PlateauActuel,LT,PT),effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PR,LR).
+
+
+minmax(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup).
+
+maxValue(_,_,0,_).
+maxValue(Joueur,PlateauActuel,0,_):-joueurGagnant(PlateauActuel,Joueur).
+maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[T|R]),
+
+
+meilleurCoupAJouer(JoueurPlateau,PLateauApres):-forall(member(S, Plateau), string_codes(S, X)),
