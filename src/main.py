@@ -27,11 +27,10 @@ class Joueur:
 def main():
 	board = Board()
 	board.display()
-	display = 1
-	while display:
+	while 1:
 		for event in pygame.event.get():
 			if event.type == QUIT:
-				display = 0
+				exit()
 
 if __name__ == '__main__':
     main()
