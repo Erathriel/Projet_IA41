@@ -162,12 +162,28 @@ effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases
 effectuerTousLesDeplacementsJoueur(_,_,[],[]).
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[PT|PR],[LT|LR]):-effectuerDeplacementsPourUneCase(PlateauActuel,LT,PT),effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PR,LR).
 
-
+/*
 minmax(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup).
 
 maxValue(_,_,0,_).
-maxValue(Joueur,PlateauActuel,0,_):-joueurGagnant(PlateauActuel,Joueur).
+maxValue(Joueur,PlateauActuel,_,_):-joueurGagnant(PlateauActuel,Joueur).
 maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[T|R]),
 
 
-meilleurCoupAJouer(JoueurPlateau,PLateauApres):-forall(member(S, Plateau), string_codes(S, X)),
+meilleurCoupAJouer(JoueurPlateau,PLateauApres):-forall(member(S, Plateau), string_codes(S, X)),*/
+
+
+
+
+minmax(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup).
+
+maxValue(_,PlateauActuel,0,PlateauActuel,Res):-evaluationJoueur(Joueur,PlateauActuel,Res).
+maxValue(Joueur,PlateauActuel,_,PlateauActuel,Res):-joueurGagnant(PlateauActuel,Joueur),evaluationJoueur(Joueur,PlateauActuel,Res).
+maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup,Res):-effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,X),V is 10000,MeilleurPlateau is PlateauActuel,forall( member(M,X), maxTest(Joueur,PlateauActuel,M,Profondeur,Z,Res)).
+/*Pour les RES: plus ellle est petite plus elle est avantageuse pour joueur*/
+maxTest(Joueur,PlateauActuel,PlateauATest,Profondeur,PlateauApresCoup,Res):- /*Comparaison resultat min avec les precedentes iterations du forall*/minValue(Joueur,PlateauATest,Profondeur-1,PlateauApresCoup,Res2),Res1<Res2,PlateauApresCoup is PlateauActuel,Res is Res1.
+maxTest(Joueur,PlateauActuel,PlateauATest,Profondeur,PlateauApresCoup,Res):- minValue(Joueur,PlateauATest,Profondeur-1,PlateauApresCoup),Res1>=Res2,Res is Res2.
+
+minValue(_,PlateauActuel,0,PlateauActuel).
+minValue(Joueur,PlateauActuel,_,PlateauActuel):-joueurGagnant(PlateauActuel,Joueur).
+minValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Jouer,PlateauActuel,Profondeur-1,PlateauApresCoup).
