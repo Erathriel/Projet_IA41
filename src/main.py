@@ -1,13 +1,13 @@
 import pygame
 from pygame.locals import *
-import src.ressources as ressources
+#import src.ressources as ressources
 
 class Board:
 
 	def __init__(self):
 		pygame.init()
-		self.fenetre = pygame.display.set_mode((569, 600))
-		self.fond = pygame.image.load("img/teeko_board.jpg").convert()
+		self.fenetre = pygame.display.set_mode((600, 600))
+		self.fond = pygame.image.load("../img/teeko_board.jpg").convert()
 		self.plateau = []
 
 	def display(self):
@@ -27,6 +27,11 @@ class Joueur:
 def main():
 	board = Board()
 	board.display()
+	display = 1
+	while display:
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				display = 0
 
 if __name__ == '__main__':
     main()
