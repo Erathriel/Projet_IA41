@@ -1,18 +1,31 @@
 import pygame
 from pygame.locals import *
-#import src.ressources as ressources
 
 class Board:
 
 	def __init__(self):
 		pygame.init()
-		self.fenetre = pygame.display.set_mode((600, 600))
+		self.fenetre = pygame.display.set_mode((569, 600))
 		self.fond = pygame.image.load("../img/teeko_board.jpg").convert()
 		self.plateau = []
 
 	def display(self):
 		self.fenetre.blit(self.fond, (0,0))
 		pygame.display.flip()
+
+	def checkWin(self, x, y):
+		pass
+
+	def isMovePossible(self, index):
+		pass
+
+	def getCase(self, x, y):
+		if( (x > 90 and x < 150) or x%150 > 84 ):
+			i = 0 if x < 150 else x / 84
+			print("dans la case d'index : "+str(i)+"\n")
+		else:
+			print("pas dans une case\n")
+		pass
 
 class Joueur:
 
@@ -27,10 +40,13 @@ class Joueur:
 def main():
 	board = Board()
 	board.display()
+
 	while 1:
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				exit()
+			if event.type == pygame.MOUSEBUTTONUP:
+				board.getCase(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) 
 
 if __name__ == '__main__':
     main()
