@@ -28,8 +28,9 @@ class Board:
 				pass
 
 	def getCase(self, x, y):
-		if( (x > 90 and x < 150) or (x-150)%84 > 24 ) :
-			i = 0 if x < 150 else int(x / 84) - 1
+		if( (x > 90 and x < 150) or (x > 150 and (x-150)%84 > 24)) and ( (y > 90 and y < 150) or (y > 150 and(y-150)%84 > 24)) and ( y < 483 and x < 483) :
+			i = 0 if y < 150 else (int(y / 84)-1)*5
+			i+= 0 if x < 150 else (int(x / 84)-1)
 			print("dans la case d'index : "+str(i)+"\n")
 		else:
 			print("pas dans une case\n")
