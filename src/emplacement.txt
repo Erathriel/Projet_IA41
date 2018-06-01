@@ -1,0 +1,4 @@
+x: 90 largeur : 60
+y : 90 largeur : 60
+
+distance entre deux case : 24
