@@ -1,4 +1,5 @@
 import pygame
+import random
 from pyswip import Prolog
 from pygame.locals import *
 
@@ -10,8 +11,8 @@ class Board:
 		self.fond = pygame.image.load("../img/teeko_board.jpg").convert()
 		self.jeton = [pygame.image.load("../img/jeton1.png").convert_alpha(), pygame.image.load("../img/jeton2.png").convert_alpha()]
 		self.select = pygame.image.load("../img/select.png").convert()
-		#self.plateau = [0]*25
-		self.plateau = [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+		self.plateau = [0]*25
+		#self.plateau = [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 	def display(self):
 		self.displayBackground()
 		self.displayCases()
@@ -39,7 +40,7 @@ class Board:
 		self.fenetre.blit(self.jeton[self.plateau[index]-1], self.getCasePos(index))
 		pygame.display.flip()
 
-	def checkWin(self):
+	def checkWin(self, joueur):
 		#for i in range(0, 25):
 		#	if self.plateau[i] != 0:
 		#		# check horizontal
@@ -47,10 +48,12 @@ class Board:
 		#			return self.plateau[i]
 		#		# check vertical
 		#return False
-		prolog=Prolog()
-		prolog.consult("minmax.pl")
-		print prolog.query("joueurGagnant(" +  str(self.plateau) + ",X)")
-
+		if(self.plateau.count(0) < 18):
+			prolog=Prolog()
+			prolog.consult("minmax.pl")
+			if list(prolog.query("joueurGagnant(" +  str(self.plateau) + ","+str(joueur._id)+")")):
+				return True
+		return False
 
 	def isMovePossible(self, index, indexPion):
 		if(index < 0 or self.plateau[index] != 0):
@@ -101,29 +104,37 @@ class Joueur:
 	def play(self, plateau):
 		if self.is_real:
 			self.plateau = plateau
-		#else appeler predicat avec plateau
+		else:
+			if self.nb_pion_pose < 4:
+				rand = random.randint(0 ,24)
+				while plateau.playMove(self, rand, None) != True:
+					rand = random.randint(0 ,24)
+
+			#else appeler predicat avec plateau
 
 def main():
 	board = Board()
 	board.display()
 
-	joueurs = [Joueur(1, True), Joueur(2, True)]
+	joueurs = [Joueur(1, True), Joueur(2, False)]
 	swap = 1
 	select = None
 
-	joueurs[swap].play(board)
-	swap = abs(swap - 1)
-
 	while 1:
+		if(joueurs[swap].is_real == False):
+			joueurs[swap].play(board)
+			if board.checkWin(joueurs[swap]) != 0:
+				print("Le joueur "+str(joueurs[swap]._id)+" a gagne")
+			swap = abs(swap - 1)
+			select = None
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				exit()
 			if event.type == pygame.MOUSEBUTTONUP and joueurs[swap].is_real :
 				case = board.getCase(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 				if board.playMove(joueurs[swap], case, select):
-					jwin = board.checkWin()
-					if(jwin):
-						print("Le joueur "+str(jwin)+" a gagne")
+					if board.checkWin(joueurs[swap]) != 0:
+						print("Le joueur "+str(joueurs[swap]._id)+" a gagne")
 					joueurs[swap].play(board)
 					swap = abs(swap - 1)
 					select = None
