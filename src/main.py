@@ -1,4 +1,5 @@
 import pygame
+from pyswip import Prolog
 from pygame.locals import *
 
 class Board:
@@ -39,18 +40,22 @@ class Board:
 		pygame.display.flip()
 
 	def checkWin(self):
-		for i in range(0, 25):
-			if self.plateau[i] != 0:
-				# check horizontal
-				if i%5 <= 1 and self.plateau[i:i+4].count(self.plateau[i]) == 4:
-					return self.plateau[i]
-				# check vertical
-		return False
+		#for i in range(0, 25):
+		#	if self.plateau[i] != 0:
+		#		# check horizontal
+		#		if i%5 <= 1 and self.plateau[i:i+4].count(self.plateau[i]) == 4:
+		#			return self.plateau[i]
+		#		# check vertical
+		#return False
+		prolog=Prolog()
+		prolog.consult("minmax.pl")
+		prolog.query("joueurGagnant(Plateau,Joueur)")
+
 
 	def isMovePossible(self, index, indexPion):
 		if(index < 0 or self.plateau[index] != 0):
 			return False
-		# verifier si tous les pions ont été posé
+		# verifier si tous les pions ont ete pose
 		elif self.plateau.count(0) > 17:
 			return True
 		# si tout les pions ont ete place alors un pion doit etre selectionne pour savoir lequel bouger
