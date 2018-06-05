@@ -11,7 +11,7 @@ class Board:
 		self.jeton = [pygame.image.load("../img/jeton1.png").convert_alpha(), pygame.image.load("../img/jeton2.png").convert_alpha()]
 		self.select = pygame.image.load("../img/select.png").convert()
 		self.plateau = [0]*25
-		#self.plateau = [1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+		#self.plateau = [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 	def display(self):
 		self.displayBackground()
 		self.displayCases()
@@ -49,7 +49,8 @@ class Board:
 		#return False
 		prolog=Prolog()
 		prolog.consult("minmax.pl")
-		prolog.query("joueurGagnant(Plateau,Joueur)")
+		gagnant = list(prolog.query("joueurGagnant(" +  str(self.plateau) + ",X)"))
+		return gagnant
 
 
 	def isMovePossible(self, index, indexPion):
