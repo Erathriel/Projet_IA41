@@ -49,7 +49,7 @@ class Board:
 		#return False
 		prolog=Prolog()
 		prolog.consult("minmax.pl")
-		print prolog.query("joueurGagnant(" +  str(self.plateau) + ",X)")
+		return bool(prolog.query("joueurGagnant(" +  str(self.plateau) + ",X)"))
 
 	def isMovePossible(self, index, indexPion):
 		if(index < 0 or self.plateau[index] != 0):
