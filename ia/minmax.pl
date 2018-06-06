@@ -41,6 +41,8 @@ mesCases(Joueur,[T|R],[I2|R2],I):-T==Joueur, I2 is I+1, mesCases(Joueur,R,R2,I2)
 /* Vrai si un joueur donné a une configuration gagnante dans le plateau donné */
 joueurGagnant(Plateau,Joueur):-mesCases(Joueur,Plateau,[A,B,C,D]), gagnant(A,B,C,D).
 
+partieGagnee(Plateau):-joueurGagnant(Plateau,1).
+partieGagnee(Plateau):-joueurGagnant(Plateau,2).
 
 
 
@@ -108,47 +110,10 @@ evaluation(Plateau,Res):-mesCases(1,Plateau,[A1,B1,C1,D1]),
                          moyenneDistancesTousLesPoints(A2,B2,C2,D2,R2),
                          Res is R2-R1.
 
+minmax(PlateauDepart,Profondeur,PlateauAJouer):-maxValue(1,[PlateauDepart],Profondeur,Valeur,-1000),getAction(PlateauDepart,Valeur,PlateauAJouer).
 
 
+maxValue(_,PlateauActuel,0,Valeur,_):-evaluation(PlateauActuel,Valeur).
+maxValue(_,PlateauActuel,_,Valeur,_):-joueurGagnant(1,PlateauActuel),evaluation(PlateauActuel,Valeur).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-minmax(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup).
-
-maxValue(_,_,0,_).
-maxValue(Joueur,PlateauActuel,_,_):-joueurGagnant(PlateauActuel,Joueur).
-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[T|R]),
-
-meilleurCoupAJouer(JoueurPlateau,PLateauApres):-forall(member(S, Plateau), string_codes(S, X)),*/
-
-minmax(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup).
-
-maxValue(_,PlateauActuel,0,PlateauActuel,Res):-evaluationJoueur(Joueur,PlateauActuel,Res).
-maxValue(Joueur,PlateauActuel,_,PlateauActuel,Res):-joueurGagnant(PlateauActuel,Joueur),evaluationJoueur(Joueur,PlateauActuel,Res).
-maxValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup,Res):-effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,X),V is 10000,MeilleurPlateau is PlateauActuel,forall( member(M,X), maxTest(Joueur,PlateauActuel,M,Profondeur,Z,Res)).
-
-/*Pour les RES: plus elle est petite plus elle est avantageuse pour joueur*/
-maxTest(Joueur,PlateauActuel,PlateauATest,Profondeur,PlateauApresCoup,Res):- /*Comparaison resultat min avec les precedentes iterations du forall*/minValue(Joueur,PlateauATest,Profondeur-1,PlateauApresCoup,Res2),Res1<Res2,PlateauApresCoup is PlateauActuel,Res is Res1.
-maxTest(Joueur,PlateauActuel,PlateauATest,Profondeur,PlateauApresCoup,Res):- minValue(Joueur,PlateauATest,Profondeur-1,PlateauApresCoup),Res1>=Res2,Res is Res2.
-
-minValue(_,PlateauActuel,0,PlateauActuel).
-minValue(Joueur,PlateauActuel,_,PlateauActuel):-joueurGagnant(PlateauActuel,Joueur).
-minValue(Joueur,PlateauActuel,Profondeur,PlateauApresCoup):-maxValue(Jouer,PlateauActuel,Profondeur-1,PlateauApresCoup).
+maxValue(1,[T|R],Profondeur,Valeur,Tmp):-Profondeur2 is Profondeur-1,effectuerTousLesDeplacementsJoueur(1,T,X),max(Tmp,Valeur,Z),minValue(2,X,Profondeur2,Valeur1,1000),max(Z,Valeur1,ValMax),maxValue(1,R,Profondeur,Valeur,ValMax).
