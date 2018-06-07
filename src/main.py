@@ -50,7 +50,7 @@ class Board:
 		#return False
 		if(self.plateau.count(0) < 18):
 			prolog=Prolog()
-			prolog.consult("minmax.pl")
+			prolog.consult("ia/minmax.pl")
 			if list(prolog.query("joueurGagnant(" +  str(self.plateau) + ","+str(joueur._id)+")")):
 				return True
 		return False
@@ -110,7 +110,7 @@ class Joueur:
 					rand = random.randint(0 ,24)
 			else:
 				prolog=Prolog()
-				prolog.consult("minmax.pl")
+				prolog.consult("ia/minmax.pl")
 				self.board.plateau = list(next(prolog.query("meilleurMouvement("+str(self._id)+","+str(self.board.plateau)+",X)"))["X"])
 				self.board.display()
 
