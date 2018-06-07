@@ -76,6 +76,6 @@ effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,[T2|R2]):-quelNumDansCase
 A utiliser pour l'algo MinValue et MaxValue (cf. diapo IA41 CM6) */
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases(Joueur,PlateauActuel,L),
                                                                         effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,X,L),
-                                                                        append(X,PlateauxApres).
+                                                                        append(X,PlateauxApres),!.
 effectuerTousLesDeplacementsJoueur(_,_,[],[]).
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,[PT|PR],[LT|LR]):-effectuerDeplacementsPourUneCase(PlateauActuel,LT,PT),effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PR,LR).

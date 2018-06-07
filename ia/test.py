@@ -7,7 +7,6 @@ prolog.consult("minmax.pl")
 
 
 
-print("avant")
 #print(prolog.query("effectuerUnDeplacement([1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],1,4,X)"))
 
 #print(list(prolog.query("evaluationJoueur(2,[1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],X)")))
@@ -22,7 +21,6 @@ print("avant")
 #    print(i)
 
 a=prolog.query("meilleurMouvement(1,[1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],X).")
-b=next(a)
-c=b['X']
-print(b)
-print(c)
+a=list(a)[0]#c0 car nous retourne un tableau de 1 case
+a=a['X']#indice pour chercher la valeur
+print(a)#la valeur

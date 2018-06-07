@@ -139,7 +139,6 @@ list_max([T|R], Max0, Max) :-Max1 is max(T, Max0),list_max(R, Max1, Max).
 
 liste_eval(_,[],[]).
 liste_eval(Joueur,[P|Rp],[V|Rv]):-evaluationJoueur(Joueur,P,V),liste_eval(Joueur,Rp,Rv).
-/*liste_eval(Joueur,P,[V]):-evaluationJoueur(Joueur,P,V).*/
 
 
 
