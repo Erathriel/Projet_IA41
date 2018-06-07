@@ -21,8 +21,5 @@ print("avant")
 #for i in a:
 #    print(i)
 
-a=prolog.query("meilleurMouvement(1,[1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],X).")
-b=next(a)
-c=b['X']
-print(b)
-print(c)
+while 1:
+	print(str(next(prolog.query("meilleurMouvement(1,[1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],X)"))["X"]))
