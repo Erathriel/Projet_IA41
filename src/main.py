@@ -96,27 +96,30 @@ class Board:
 
 class Joueur:
 
-	def __init__(self, _id, is_real):
+	def __init__(self, _id, is_real, board):
 		self._id = _id
 		self.is_real = is_real
 		self.nb_pion_pose = 0
+		self.board = board
 
-	def play(self, plateau):
-		if self.is_real:
-			self.plateau = plateau
-		else:
+	def play(self, board):
+		if not self.is_real:
 			if self.nb_pion_pose < 4:
 				rand = random.randint(0 ,24)
-				while plateau.playMove(self, rand, None) != True:
+				while self.board.playMove(self, rand, None) != True:
 					rand = random.randint(0 ,24)
+			else:
+				prolog=Prolog()
+				prolog.consult("minmax.pl")
+				self.board.plateau = list(next(prolog.query("meilleurMouvement("+str(self._id)+","+str(self.board.plateau)+",X)"))["X"])
+				self.board.display()
 
-			#else appeler predicat avec plateau
 
 def main():
 	board = Board()
 	board.display()
 
-	joueurs = [Joueur(1, True), Joueur(2, False)]
+	joueurs = [Joueur(1, True, board), Joueur(2, False, board)]
 	swap = 1
 	select = None
 
