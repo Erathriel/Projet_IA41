@@ -25,14 +25,10 @@ a=list(a)[0]#c0 car nous retourne un tableau de 1 case
 a=a['X']#indice pour chercher la valeur
 for i in a:
     print(i)
-
 if list(prolog.query("joueurGagnant([1,1,1,1,2,0,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],1)")):
     print("ok")
-
-
 a=list(prolog.query("evaluationJoueur(1,[1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],X)"))[0]['X']
 print(a)
-
 '''
 
 
