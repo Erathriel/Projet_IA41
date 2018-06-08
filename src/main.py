@@ -1,5 +1,7 @@
 import pygame
 import random
+import sys
+import easygui
 from pyswip import Prolog
 from pygame.locals import *
 
@@ -41,13 +43,6 @@ class Board:
 		pygame.display.flip()
 
 	def checkWin(self, joueur):
-		#for i in range(0, 25):
-		#	if self.plateau[i] != 0:
-		#		# check horizontal
-		#		if i%5 <= 1 and self.plateau[i:i+4].count(self.plateau[i]) == 4:
-		#			return self.plateau[i]
-		#		# check vertical
-		#return False
 		if(self.plateau.count(0) < 18):
 			prolog=Prolog()
 			prolog.consult("ia/minmax.pl")
@@ -137,7 +132,8 @@ def main():
 				case = board.getCase(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 				if board.playMove(joueurs[swap], case, select):
 					if board.checkWin(joueurs[swap]) != 0:
-						print("Le joueur "+str(joueurs[swap]._id)+" a gagne")
+						s="Le joueur "+str(joueurs[swap]._id)+" a gagne"
+						easygui.msgbox(s, title="End")
 					joueurs[swap].play(board)
 					swap = abs(swap - 1)
 					select = None
