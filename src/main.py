@@ -45,8 +45,8 @@ class Board:
 		conteneur_1.ajouter_contenu(v3)
 		conteneur_1.ajouter_contenu(v4)
 		conteneur_1.supprimer_contenu(v4)
-		conteneur_1.dessiner(ecran, DIMENSION_ECRAN//2, DIMENSION_ECRAN//2) 
-		pygame.display.flip()  
+		conteneur_1.dessiner(ecran, DIMENSION_ECRAN//2, DIMENSION_ECRAN//2)
+		pygame.display.flip()
 
 	def display(self):
 		self.displayBackground()
@@ -142,6 +142,69 @@ class Joueur:
 				self.board.plateau = list(next(prolog.query("meilleurMouvement("+str(self._id)+","+str(self.board.plateau)+",X)"))["X"])
 				self.board.display()
 
+##################### IA ###################
+class Resultat:
+    def __init__(self,valo,plato):
+        self.val=valo
+        self.plat=plato
+
+    def getVal(self):
+        return self.val;
+
+    def getPlat(self):
+        return self.plat;
+
+class IA:
+    def __init__(self,nJoueur):
+        self.joueur=nJoueur
+
+    def jouer(self,e,p):
+        v=self.MaxValue(e,p,10000000,-10000000)
+        return v.getPlat();
+
+    def MaxValue(self,e,p,alpha,beta):
+        if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
+            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
+            return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]['X'],e);
+        v=1000
+        succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]
+        plat=e
+        for s in succ['X']:
+            tmp=self.MinValue(s,p-1,alpha,beta)
+            if(tmp.getVal()<v):
+                plat=s
+            v=min(v,tmp.getVal())
+            if v<=beta:
+                return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(s)+",X)"))[0]['X'],s);
+            alpha=min(alpha,v)
+        return Resultat(v,plat);
+
+    def MinValue(self,e,p,alpha,beta):
+        aj=self.changeJoueur()
+        if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
+            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
+            return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]['X'],e);
+        v=-1000
+        succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
+        plat=e
+        for s in succ['X']:
+            tmp=self.MaxValue(s,p-1,alpha,beta)
+            if(tmp.getVal()>v):
+                plat=s
+            v=max(v,tmp.getVal())
+            if v<=alpha:
+                return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(s)+",X)"))[0]['X'],s);
+            beta=min(beta,v)
+        return Resultat(v,plat);
+
+    def changeJoueur(self):
+        aj=0
+        if self.joueur==1:
+            aj=2
+        elif self.joueur==2:
+            aj=1
+        return aj;
+############################################
 
 def main():
 	board = Board()

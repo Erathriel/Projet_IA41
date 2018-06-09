@@ -28,7 +28,7 @@ for i in a:
 if list(prolog.query("joueurGagnant([1,1,1,1,2,0,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],1)")):
     print("ok")
 '''
-print('devb')
+print("debut")
 '''
 a=list(prolog.query("effectuerTousLesDeplacementsJoueur(1,[1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0],X)"))[0]['X']
 for i in a:
@@ -43,19 +43,10 @@ def changeJoueur(j):
         aj=1
     return aj;
 
-class Resultat:
-    def __init__(self,valo,plato):
-        self.val=valo
-        self.plat=plato
-
-    def getVal(self):
-        return self.val;
-
-    def getPlat(self):
-        return self.plat;
 
 
 
+'''
 def MinMaxPL(j,e,p):
     v=MaxValue(j,e,p,10000000,-10000000)
     return v.getPlat();
@@ -96,5 +87,85 @@ def MinValue(j,e,p,alpha,beta):
     return Resultat(v,plat);
 
 
-v=MinMaxPL(1,[1,2,0,0,0,1,0,2,0,0,1,0,0,2,0,0,0,1,0,0,0,0,2,0,0],1)
-print(v)
+v=MinMaxPL(1,[1,2,0,0,0,1,0,2,0,0,1,0,0,2,0,0,1,0,0,0,0,0,2,0,0],1)
+#print(v)
+'''
+
+
+class Resultat:
+    def __init__(self,valo,plato):
+        self.val=valo
+        self.plat=plato
+
+    def getVal(self):
+        return self.val;
+
+    def getPlat(self):
+        return self.plat;
+
+class IA:
+    def __init__(self,nJoueur):
+        self.joueur=nJoueur
+
+    def jouer(self,e,p):
+        v=self.MaxValue(e,p,10000000,-10000000)
+        return v.getPlat();
+
+    def MaxValue(self,e,p,alpha,beta):
+        if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
+            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
+            return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]['X'],e);
+        v=1000
+        succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]
+        plat=e
+        for s in succ['X']:
+            tmp=self.MinValue(s,p-1,alpha,beta)
+            if(tmp.getVal()<v):
+                plat=s
+            v=min(v,tmp.getVal())
+            if v<=beta:
+                return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(s)+",X)"))[0]['X'],s);
+            alpha=min(alpha,v)
+        return Resultat(v,plat);
+
+    def MinValue(self,e,p,alpha,beta):
+        aj=self.changeJoueur()
+        if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
+            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
+            return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]['X'],e);
+        v=-1000
+        succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
+        plat=e
+        for s in succ['X']:
+            tmp=self.MaxValue(s,p-1,alpha,beta)
+            if(tmp.getVal()>v):
+                plat=s
+            v=max(v,tmp.getVal())
+            if v<=alpha:
+                return Resultat(list(prolog.query("evaluationJoueur("+str(self.joueur)+","+str(s)+",X)"))[0]['X'],s);
+            beta=min(beta,v)
+        return Resultat(v,plat);
+
+    def changeJoueur(self):
+        aj=0
+        if self.joueur==1:
+            aj=2
+        elif self.joueur==2:
+            aj=1
+        return aj;
+
+ia=IA(1)
+p=ia.jouer([1,2,0,0,0,1,0,2,0,0,1,0,0,2,0,0,0,0,0,1,0,0,2,0,0],4)
+print(list(prolog.query("afficher("+str(p)+")")))
+'''
+ia1=IA(1)
+ia2=IA(2)
+while(True):
+    p1=ia1.jouer([1,2,0,0,0,1,0,2,0,0,1,0,0,2,0,0,0,0,0,1,0,0,2,0,0],4)
+    print(list(prolog.query("afficher("+str(p1)+")")))
+    p2=ia2.jouer(p1,4)
+    print(list(prolog.query("afficher("+str(p2)+")")))
+
+'''
+
+print("fin")
