@@ -74,11 +74,11 @@ def MaxValue(j,e,p):
     return Resultat(v,plat);
 
 def MinValue(j,e,p):
-
+    aj=changeJoueur(j)
     if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(j)+")")):
         return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
     v=-1000
-    succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(j)+","+str(e)+",X)"))[0]
+    succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
     plat=e
     for s in succ['X']:
         tmp=MaxValue(j,s,p-1)
@@ -88,5 +88,5 @@ def MinValue(j,e,p):
     return Resultat(v,plat);
 
 
-v=MinMaxPL(1,[1,1,1,0,2,0,0,2,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0,1,0],3)
+v=MinMaxPL(1,[1,1,1,0,2,0,0,2,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0,1,0],4)
 print(v)
