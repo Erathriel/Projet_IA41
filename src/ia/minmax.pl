@@ -100,6 +100,8 @@ moyenneDistancesTousLesPoints(A,B,C,D,R):-dist2Points(A,B,R1),
                                           R is R7/6.
 
 /* Res est la distance moyenne entre les 4 cases d'un joueur  */
+evaluationJoueur(Joueur,Plateau,-10000000):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
+                                          gagnant(A1,B1,C1,D1).
 evaluationJoueur(Joueur,Plateau,Res):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
                          moyenneDistancesTousLesPoints(A1,B1,C1,D1,Res).
 
@@ -143,7 +145,7 @@ liste_eval(Joueur,[P|Rp],[V|Rv]):-evaluationJoueur(Joueur,P,V),liste_eval(Joueur
 
 
 /*   SUBSTITUT A MINMAX AU CAS OU */
-meilleurMouvement(Joueur,Dep,Arr):-effectuerTousLesDeplacementsJoueur(Joueur,Dep,X),liste_eval(Joueur,X,Lev),list_min(Lev,M),indexOf(Lev,M,I),quelNumDansCase(I,X,Arr).
+meilleurMouvement(Joueur,Dep,Arr):-effectuerTousLesDeplacementsJoueur(Joueur,Dep,X),liste_eval(Joueur,X,Lev),list_max(Lev,M),indexOf(Lev,M,I),quelNumDansCase(I,X,Arr).
 
 /*jouer(E,P):-maxValue(E,P,V),write(V).
 
