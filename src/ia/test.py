@@ -62,29 +62,32 @@ def MinMaxPL(j,e,p):
 
 def MaxValue(j,e,p):
     if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(j)+")")):
-        return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
+        #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
+        return Resultat(list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'],e);
     v=1000
     succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(j)+","+str(e)+",X)"))[0]
     plat=e
     for s in succ['X']:
         tmp=MinValue(j,s,p-1)
-        if(tmp<v):
+        if(tmp.getVal()<v):
             plat=s
-        v=min(v,tmp)
+        v=min(v,tmp.getVal())
     return Resultat(v,plat);
 
 def MinValue(j,e,p):
     aj=changeJoueur(j)
     if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(j)+")")):
-        return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
+        #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
+        return Resultat(list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'],e);
     v=-1000
     succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
     plat=e
     for s in succ['X']:
         tmp=MaxValue(j,s,p-1)
-        if(tmp>v):
+        print(tmp)
+        if(tmp.getVal()>v):
             plat=s
-        v=max(v,tmp)
+        v=max(v,tmp.getVal())
     return Resultat(v,plat);
 
 
