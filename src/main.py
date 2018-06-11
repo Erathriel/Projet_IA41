@@ -5,24 +5,6 @@ import easygui
 from pyswip import Prolog
 from pygame.locals import *
 
-menu_data = (
-    'Main',
-    'Item 0',
-    'Item 1',
-    (
-        'Things',
-        'Item 0',
-        'Item 1',
-        'Item 2',
-        (
-            'More Things',
-            'Item 0',
-            'Item 1',
-        ),
-    ),
-    'Quit',
-)
-
 class Board:
 
 	def __init__(self):
@@ -33,20 +15,6 @@ class Board:
 		self.select = pygame.image.load("../img/select.png").convert()
 		self.plateau = [0]*25
 		#self.plateau = [1,1,0,1,2,0,0,0,2,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0]
-
-	def menu(self):
-		#Variables
-		v1, v2, v3, v4 = "Menu", "Pause", "Quitter", "Autre"
-
-		#Conteneur
-		conteneur_1 = Conteneur(5) #On creer un menu avec 5 cellules au maximum
-		conteneur_1.ajouter_contenu(v1)
-		conteneur_1.ajouter_contenu(v2)
-		conteneur_1.ajouter_contenu(v3)
-		conteneur_1.ajouter_contenu(v4)
-		conteneur_1.supprimer_contenu(v4)
-		conteneur_1.dessiner(ecran, DIMENSION_ECRAN//2, DIMENSION_ECRAN//2)
-		pygame.display.flip()
 
 	def display(self):
 		self.displayBackground()
@@ -246,6 +214,8 @@ def main():
 				else:
 					board.display()
 					board.displaySelect(select)
+
+
 
 if __name__ == '__main__':
     main()
