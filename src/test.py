@@ -264,7 +264,7 @@ class Joueur:
                     rand = random.randint(0 ,24)
             else:
                 ia=IA(2)
-                self.board.plateau=ia.jouer(self.board.plateau,3)
+                self.board.plateau=ia.jouer(self.board.plateau,4)
                 self.board.display()
 
 def main():
@@ -280,7 +280,9 @@ def main():
         if(joueurs[swap].is_real == False):
             joueurs[swap].play(board)
             if board.checkWin(joueurs[swap]) != 0:
-                print("Le joueur "+str(joueurs[swap]._id)+" a gagne")
+                s="Le joueur "+str(joueurs[swap]._id)+" a gagne"
+                easygui.msgbox(s, title="End")
+                exit()
             swap = abs(swap - 1)
             select = None
         for event in pygame.event.get():
