@@ -54,6 +54,7 @@ deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCase
                                                                list_to_set(Lg,Lh),
                                                                deplacementsPossibles2(PlateauActuel,Lh,ListeDeplacementsPossibles).
 
+/* Regarde dans la liste Lh précedente (toutes les cases adjacentes des 4 pions) si c'est une case libre. Si oui, l'ajoute dans la listre de retour*/
 deplacementsPossibles2(_,[],[]).
 deplacementsPossibles2(PlateauActuel,[T|R],L):-quelNumDansCase(T,PlateauActuel,QNDC),QNDC\=0,deplacementsPossibles2(PlateauActuel,R,L).
 deplacementsPossibles2(PlateauActuel,[T|R],[T|R2]):-quelNumDansCase(T,PlateauActuel,QNDC),QNDC==0,deplacementsPossibles2(PlateauActuel,R,R2).
