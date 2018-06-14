@@ -200,7 +200,7 @@ class IA:
     def __init__(self,nJoueur):
         self.joueur=nJoueur
         file = open("plateauGagnant.txt", "r")
-        #lecture des 44 possibilité de plateaux gagnants dans un fichiers
+        #lecture des 44 possibilite de plateaux gagnants dans un fichiers
         self.plateauxGagnant=[]
         for line in file:
             self.plateauxGagnant.append(eval(line))
@@ -211,8 +211,8 @@ class IA:
         return v.getPlat();
     def MaxValue(self,e,p,alpha,beta):
         if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
-            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
-            #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e);
+            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
+            #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e)
             return Resultat(self.evaluer(j,e),e);
         v=1000
         succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]
@@ -223,16 +223,16 @@ class IA:
                 plat=s
             v=min(v,tmp.getVal())
             if v<=beta:
-                #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s);
-                return Resultat((self.evaluer(self.joueur,e),e);
+                #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s)
+                return Resultat((self.evaluer(self.joueur,e),e))
             alpha=min(alpha,v)
-        return Resultat(v,plat);
+        return Resultat(v,plat)
 
     def MinValue(self,e,p,alpha,beta):
         aj=self.changeJoueur()
         if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
-            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
-            #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e);
+            #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
+            #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e)
             return Resultat(self.evaluer(j,e),e);
         v=-1000
         succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
@@ -243,10 +243,10 @@ class IA:
                 plat=s
             v=max(v,tmp.getVal())
             if v<=alpha:
-                #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s);
-                return Resultat(self.evaluer(aj,e),s);
+                #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s)
+                return Resultat(self.evaluer(aj,e),s)
             beta=min(beta,v)
-        return Resultat(v,plat);
+        return Resultat(v,plat)
 
     def changeJoueur(self):
         aj=0
@@ -254,7 +254,7 @@ class IA:
             aj=2
         elif self.joueur==2:
             aj=1
-        return aj;
+        return aj
 
     #recupere les indices des poins du joueur passe en parametre
     def getIndicesJoueur(self,joueur,plateauAEavaluer):
