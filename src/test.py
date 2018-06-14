@@ -25,12 +25,12 @@
 # from dico import *
 # import pygame
 # from pygame.locals import *
- 
+
 # TAILLE_BLOC = 20
 # NB_BLOC_MAX = 30
 # DIMENSION_ECRAN = TAILLE_BLOC * NB_BLOC_MAX
- 
- 
+
+
 # def dire_bonjour():
 #     print("\n\nJe suis la fonction dire bonjour, donc bonjour")
 # #-------------------------------------------------------------------------------
@@ -57,8 +57,8 @@
 # conteneur_1[var_1].set_nom_methode_a_executer(dire_bonjour)
 # conteneur_1[var_1].set_couleur((0,0,255))
 # #On boucle chaque contenu pour draw le rect respectif en couleur + contour
-# conteneur_1.dessiner(ecran, DIMENSION_ECRAN//2, DIMENSION_ECRAN//2) 
-# pygame.display.flip() 
+# conteneur_1.dessiner(ecran, DIMENSION_ECRAN//2, DIMENSION_ECRAN//2)
+# pygame.display.flip()
 # #-------------------------------------------------------------------------------
 # #Boucle principale
 # #-------------------------------------------------------------------------------
@@ -96,6 +96,7 @@ import sys
 import easygui
 from pyswip import Prolog
 from pygame.locals import *
+import math
 
 prolog=Prolog()
 
@@ -108,7 +109,6 @@ class Board:
         self.jeton = [pygame.image.load("../img/jeton1.png").convert_alpha(), pygame.image.load("../img/jeton2.png").convert_alpha()]
         self.select = pygame.image.load("../img/select.png").convert()
         self.plateau = [0]*25
-        #self.plateau = [1,1,0,1,2,0,0,0,2,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0]
 
     def display(self):
         self.displayBackground()
@@ -199,15 +199,21 @@ class Resultat:
 class IA:
     def __init__(self,nJoueur):
         self.joueur=nJoueur
+        file = open("plateauGagnant.txt", "r")
+        #lecture des 44 possibilité de plateaux gagnants dans un fichiers
+        self.plateauxGagnant=[]
+        for line in file:
+            self.plateauxGagnant.append(eval(line))
+
 
     def jouer(self,e,p):
         v=self.MaxValue(e,p,10000000,-10000000)
         return v.getPlat();
-
     def MaxValue(self,e,p,alpha,beta):
         if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
             #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
-            return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e);
+            #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e);
+            return Resultat(self.evaluer(j,e),e);
         v=1000
         succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]
         plat=e
@@ -217,7 +223,8 @@ class IA:
                 plat=s
             v=min(v,tmp.getVal())
             if v<=beta:
-                return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s);
+                #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s);
+                return Resultat((self.evaluer(self.joueur,e),e);
             alpha=min(alpha,v)
         return Resultat(v,plat);
 
@@ -225,7 +232,8 @@ class IA:
         aj=self.changeJoueur()
         if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
             #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X'];
-            return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e);
+            #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e);
+            return Resultat(self.evaluer(j,e),e);
         v=-1000
         succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
         plat=e
@@ -235,7 +243,8 @@ class IA:
                 plat=s
             v=max(v,tmp.getVal())
             if v<=alpha:
-                return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s);
+                #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s);
+                return Resultat(self.evaluer(aj,e),s);
             beta=min(beta,v)
         return Resultat(v,plat);
 
@@ -246,6 +255,89 @@ class IA:
         elif self.joueur==2:
             aj=1
         return aj;
+
+    #recupere les indices des poins du joueur passe en parametre
+    def getIndicesJoueur(self,joueur,plateauAEavaluer):
+        listIndexJoueur=[]
+        for i in range(0,len(plateauAEavaluer)-1):
+            if(joueur==plateauAEavaluer[i]):
+                listIndexJoueur.append(i+1)
+        return listIndexJoueur
+
+    #fonction d'evaluation
+    def evaluer(self,joueur,plateauAEavaluer):
+      eval=100000
+      listIndexJoueur=self.getIndicesJoueur(joueur,plateauAEavaluer)
+      listeCoordonneeJ=self.getCoordonnees(listIndexJoueur)
+      for pl in self.plateauxGagnant:
+          #on passe 1 en parametre car le fichier contient des listes [1 ou 0, ....]
+          listIndex=self.getIndicesJoueur(1,pl)
+          listeCoordonnee=self.getCoordonnees(listIndex)
+          #distance entre chaque points
+          distance=0
+          for i in range(0,len(listeCoordonneeJ)-1):
+              distance+=math.sqrt((listeCoordonnee[i][0] - listeCoordonneeJ[i][0])*(listeCoordonnee[i][0] - listeCoordonneeJ[i][0]) +(listeCoordonnee[i][1] - listeCoordonneeJ[i][1])*(listeCoordonnee[i][1] - listeCoordonneeJ[i][1]))
+          if(eval >=distance):
+              eval=distance
+      return eval
+
+    #a partir de l'indice des cases donne les coordonnes
+    def getCoordonnees(self,points):
+        listeCoordonnee=[]
+        for p in points:
+            if p==1:
+                listeCoordonnee.append([1,1])
+            elif p==2:
+                listeCoordonnee.append([1,2])
+            elif p==3:
+                listeCoordonnee.append([1,3])
+            elif p==4:
+                listeCoordonnee.append([1,4])
+            elif p==5:
+                listeCoordonnee.append([1,5])
+            elif p==6:
+                listeCoordonnee.append([2,1])
+            elif p==7:
+                listeCoordonnee.append([2,2])
+            elif p==8:
+                listeCoordonnee.append([2,3])
+            elif p==9:
+                listeCoordonnee.append([2,4])
+            elif p==10:
+                listeCoordonnee.append([2,5])
+            elif p==11:
+                listeCoordonnee.append([3,1])
+            elif p==12:
+                listeCoordonnee.append([3,2])
+            elif p==13:
+                listeCoordonnee.append([3,3])
+            elif p==14:
+                listeCoordonnee.append([3,4])
+            elif p==15:
+                listeCoordonnee.append([3,5])
+            elif p==16:
+                listeCoordonnee.append([4,1])
+            elif p==17:
+                listeCoordonnee.append([4,2])
+            elif p==18:
+                listeCoordonnee.append([4,3])
+            elif p==19:
+                listeCoordonnee.append([4,4])
+            elif p==20:
+                listeCoordonnee.append([4,5])
+            elif p==21:
+                listeCoordonnee.append([5,1])
+            elif p==22:
+                listeCoordonnee.append([5,2])
+            elif p==23:
+                listeCoordonnee.append([5,3])
+            elif p==24:
+                listeCoordonnee.append([5,4])
+            else :
+                listeCoordonnee.append([5,5])
+
+        return listeCoordonnee
+
 ############################################
 
 class Joueur:
