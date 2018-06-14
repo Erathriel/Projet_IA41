@@ -9,7 +9,10 @@ effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres) : Toutes 
 
 *******************************************************************************************/
 
-/* Donne les cases adjacentes où un pion peut bouger */
+/*
+Donne les cases adjacentes où un pion peut bouger
+possibiliteDeplacerPion(+Case,-Liste).
+*/
 possibiliteDeplacerPion(1,[2,6,7]).
 possibiliteDeplacerPion(2,[1,3,6,7,8]).
 possibiliteDeplacerPion(3,[2,4,7,8,9]).
@@ -36,13 +39,19 @@ possibiliteDeplacerPion(23,[17,18,19,22,23]).
 possibiliteDeplacerPion(24,[18,19,20,23,25]).
 possibiliteDeplacerPion(25,[19,20,24]).
 
-/* Transforme une liste en une liste sans récurrence */
+/*
+Transforme une liste en une liste sans récurrence
+list_to_set(+L1,-L2)
+*/
 list_to_set(L1,L2):-list_to_set(L1,L2,[]).
 list_to_set([],[],_).
 list_to_set([X|R1],L,T):-member(X,T),!,list_to_set(R1,L,T).
 list_to_set([X|R1],[X|R2],T):-append(T,[X],T1),list_to_set(R1,R2,T1).
 
-/* donne pour le moment toutes les cases où le joueur aura la possibilité de se déplacer */
+/*
+Donne pour le moment toutes les cases où le joueur aura la possibilité de se déplacer
+deplacementsPossibles(+Joueur,+PlateauActuel,-ListeDeplacementsPossibles)
+*/
 deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCases(Joueur,PlateauActuel,[A,B,C,D]),
                                                                possibiliteDeplacerPion(A,La),
                                                                possibiliteDeplacerPion(B,Lb),
@@ -53,13 +62,14 @@ deplacementsPossibles(Joueur,PlateauActuel,ListeDeplacementsPossibles):- mesCase
                                                                append(Lf,Ld,Lg),
                                                                list_to_set(Lg,Lh),
                                                                deplacementsPossibles2(PlateauActuel,Lh,ListeDeplacementsPossibles).
-
-/* Regarde dans la liste Lh précedente (toutes les cases adjacentes des 4 pions) si c'est une case libre. Si oui, l'ajoute dans la listre de retour*/
 deplacementsPossibles2(_,[],[]).
 deplacementsPossibles2(PlateauActuel,[T|R],L):-quelNumDansCase(T,PlateauActuel,QNDC),QNDC\=0,deplacementsPossibles2(PlateauActuel,R,L).
 deplacementsPossibles2(PlateauActuel,[T|R],[T|R2]):-quelNumDansCase(T,PlateauActuel,QNDC),QNDC==0,deplacementsPossibles2(PlateauActuel,R,R2).
 
-/* Transfère contenu d'une case à une autre (simule mouvement pion) */
+/*
+Transfère contenu d'une case à une autre (simule mouvement pion)
+effectuerUnDeplacement(+PlateauActuel,+CaseAvant,+CaseApres,-PlateauApres)
+*/
 effectuerUnDeplacement(PlateauActuel,CaseAvant,CaseApres,PlateauApres):-quelNumDansCase(CaseAvant,PlateauActuel,A), effectuerUnDeplacement(PlateauActuel,CaseAvant,CaseApres,PlateauApres,A,1).
 effectuerUnDeplacement([],_,_,[],_,_).
 effectuerUnDeplacement([_|R],CaseAvant,CaseApres,[0|R2],A,I):-I==CaseAvant, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
@@ -67,14 +77,20 @@ effectuerUnDeplacement([_|R],CaseAvant,CaseApres,[A|R2],A,I):-I==CaseApres, I2 i
 effectuerUnDeplacement([T|R],CaseAvant,CaseApres,[T|R2],A,I):-I\=CaseAvant, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
 effectuerUnDeplacement([T|R],CaseAvant,CaseApres,[T|R2],A,I):-I\=CaseApres, I2 is I+1, effectuerUnDeplacement(R,CaseAvant,CaseApres,R2,A,I2).
 
-/* Retourne les plateaux après avoir fait les déplacements possibles en partant d'une case */
+/*
+Retourne les plateaux après avoir fait les déplacements possibles en partant d'une case
+effectuerDeplacementsPourUneCase(+PlateauActuel,+NCase,-LesPlateauxApres)
+*/
 effectuerDeplacementsPourUneCase(PlateauActuel,NCase,LesPlateauxApres):-possibiliteDeplacerPion(NCase,Poss),effectuerDeplacementsPourUneCase(PlateauActuel,NCase,LesPlateauxApres,Poss).
 effectuerDeplacementsPourUneCase(_,_,[],[]).
 effectuerDeplacementsPourUneCase(PlateauActuel,NCase,[T|R],[T2|R2]):-quelNumDansCase(T2,PlateauActuel,0),effectuerUnDeplacement(PlateauActuel,NCase,T2,T),effectuerDeplacementsPourUneCase(PlateauActuel,NCase,R,R2).
 effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,[T2|R2]):-quelNumDansCase(T2,PlateauActuel,Z),Z\=0,effectuerDeplacementsPourUneCase(PlateauActuel,NCase,L,R2).
 
-/* Retourne tous les plateaux possibles qu'un joueur peut obtenir à un moment donné
-A utiliser pour l'algo MinValue et MaxValue (cf. diapo IA41 CM6) */
+/*
+Retourne tous les plateaux possibles qu'un joueur peut obtenir à un moment donné
+A utiliser pour l'algo MinValue et MaxValue (cf. diapo IA41 CM6)
+effectuerTousLesDeplacementsJoueur(+Joueur,+PlateauActuel,-PlateauxApres)
+*/
 effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,PlateauxApres):-mesCases(Joueur,PlateauActuel,L),
                                                                         effectuerTousLesDeplacementsJoueur(Joueur,PlateauActuel,X,L),
                                                                         append(X,PlateauxApres),!.

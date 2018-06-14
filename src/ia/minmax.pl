@@ -17,30 +17,47 @@ plateau exemple : [1,1,1,0,2,1,0,0,0,2,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0]
 0 0 0 0 0
 */
 
+/*
+affiche(+Plateau)
+*/
 afficher([A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y]):-write([A,B,C,D,E]),write('\n'),write([F,G,H,I,J]),write('\n'),write([K,L,M,N,O]),write('\n'),write([P,Q,R,S,T]),write('\n'),write([U,V,W,X,Y]).
 
-/* Regarde quel joueur est dans la case donnée
+/*
+Regarde quel joueur est dans la case donnée
 0 si libre
 1 si joueur 1
 2 si joueur 2
-quelNumDansCase(+NCase,+Plateau,?Res) Plateau est une liste */
+quelNumDansCase(+NCase,+Plateau,?Res) Plateau est une liste
+*/
 quelNumDansCase(NCase,Plateau,Res):- quelNumDansCase(NCase,Plateau,Res,1).
 quelNumDansCase(NCase,[T|_],T,NCase):- !.
 quelNumDansCase(NCase,[_|R],Res,I):- I<NCase, I2 is I+1, quelNumDansCase(NCase,R,Res,I2).
 
-/* Retourne les indices d'un numero joueur donné /!\ pb*/
+/*
+Retourne les indices d'un numero joueur donné
+indexOf(+Liste,+Element,-I)
+*/
 indexOf([NumJoueur|_], NumJoueur, 1).
 indexOf([_|Tail], NumJoueur, Index):- indexOf(Tail, NumJoueur, Index1), Index is Index1+1.  % and increment the resulting index
 
-/* Retourne les 4 indices des cases d'joueur donné */
-mesCases(Joueur,Plateau,[A,B,C,D]):-mesCases(Joueur,Plateau,[A,B,C,D|_],0).
-mesCases(_,[],_,_).
+/*
+Retourne les 4 indices des cases d'joueur donné
+mesCases(+Joueur,+Plateau,-L)
+*/
+mesCases(Joueur,Plateau,L):-mesCases(Joueur,Plateau,L,0).
+mesCases(_,[],[],_).
 mesCases(Joueur,[T|R],R2,I):-T\=Joueur, I2 is I+1, mesCases(Joueur,R,R2,I2).
 mesCases(Joueur,[T|R],[I2|R2],I):-T==Joueur, I2 is I+1, mesCases(Joueur,R,R2,I2).
 
-/* Vrai si un joueur donné a une configuration gagnante dans le plateau donné */
+/*
+Vrai si un joueur donné a une configuration gagnante dans le plateau donné
+joueurGagnant(+Plateau,+Joueur)
+*/
 joueurGagnant(Plateau,Joueur):-mesCases(Joueur,Plateau,[A,B,C,D]), gagnant(A,B,C,D).
 
+/*
+partieGagnee(+Plateau)
+*/
 partieGagnee(Plateau):-joueurGagnant(Plateau,1).
 partieGagnee(Plateau):-joueurGagnant(Plateau,2).
 
@@ -59,7 +76,10 @@ partieGagnee(Plateau):-joueurGagnant(Plateau,2).
 
 /************************ EVALUATION ************************/
 
-/* Convertis un numéro de case en coordonnées x et y */
+/*
+Convertis un numéro de case en coordonnées x et y
+coord(+Case,?X,?Y)
+*/
 coord(1,1,1).
 coord(2,1,2).
 coord(3,1,3).
@@ -86,10 +106,16 @@ coord(23,5,3).
 coord(24,5,4).
 coord(25,5,5).
 
-/* Res est la distance entre les points données A et B */
+/*
+Res est la distance entre les points données A et B
+dist2Points(+A,+B,-Res)
+*/
 dist2Points(A,B,Res):-coord(A,Xa,Ya),coord(B,Xb,Yb), Res is sqrt((Xb-Xa)*(Xb-Xa)+(Yb-Ya)*(Yb-Ya)).
 
-/* Retourne la distance moyenne entre 4 cases */
+/*
+Retourne la distance moyenne entre 4 cases
+moyenneDistancesTousLesPoints(+A,+B,+C,+D,-R)
+*/
 moyenneDistancesTousLesPoints(A,B,C,D,R):-dist2Points(A,B,R1),
                                           dist2Points(A,C,R2),
                                           dist2Points(A,D,R3),
@@ -99,13 +125,16 @@ moyenneDistancesTousLesPoints(A,B,C,D,R):-dist2Points(A,B,R1),
                                           R7 is R1+R2+R3+R4+R5+R6,
                                           R is R7/6.
 
-/* Res est la distance moyenne entre les 4 cases d'un joueur  */
-evaluationJoueur(Joueur,Plateau,Res):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
-                                          gagnant(A1,B1,C1,D1),moyenneDistancesTousLesPoints(A1,B1,C1,D1,Res).
+/*
+Res est la distance moyenne entre les 4 cases d'un joueur
+evaluationJoueur(+Joueur,+Plateau,-Res)
+*/
+evaluationJoueur(Joueur,Plateau,-100000):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
+                                          gagnant(A1,B1,C1,D1).
 evaluationJoueur(Joueur,Plateau,Res):-mesCases(Joueur,Plateau,[A1,B1,C1,D1]),
                          moyenneDistancesTousLesPoints(A1,B1,C1,D1,Res).
 
-/* fonction evaluation ???? */
+/* fonction evaluation à voir???? */
 evaluation(Plateau,Res):-mesCases(1,Plateau,[A1,B1,C1,D1]),
                          mesCases(2,Plateau,[A2,B2,C2,D2]),
                          moyenneDistancesTousLesPoints(A1,B1,C1,D1,R1),
@@ -129,22 +158,35 @@ maxValue(1,[T|R],Profondeur,Valeur,Tmp):-Profondeur2 is Profondeur-1,effectuerTo
 
 
 
-
+/*
+donne le min d'une liste
+list_min(+L, -Min)
+*/
 list_min([L|Ls], Min) :-list_min(Ls, L, Min).
 list_min([], Min, Min).
 list_min([L|Ls], Min0, Min) :-Min1 is min(L, Min0),list_min(Ls, Min1, Min).
 
+/*
+donne le max d'une liste
+list_max(+L, -Min)
+*/
 list_max([T|R], Max) :-list_max(R, T, Max).
 list_max([], Max, Max).
 list_max([T|R], Max0, Max) :-Max1 is max(T, Max0),list_max(R, Max1, Max).
 
-
+/*
+retourne dans LRes la liste de chacune des évaluations des plateaux de la liste LPlateaux par rapport à un joueur donné
+liste-eval(+Joueur,+LPLateaux,-LRes)
+*/
 liste_eval(_,[],[]).
 liste_eval(Joueur,[P|Rp],[V|Rv]):-evaluationJoueur(Joueur,P,V),liste_eval(Joueur,Rp,Rv).
 
 
 
-/*   SUBSTITUT A MINMAX AU CAS OU */
+/*
+SUBSTITUT A MINMAX AU CAS OU
+meilleurMouvement(+Joueur,+Dep, -Arr)
+*/
 meilleurMouvement(Joueur,Dep,Arr):-effectuerTousLesDeplacementsJoueur(Joueur,Dep,X),liste_eval(Joueur,X,Lev),list_max(Lev,M),indexOf(Lev,M,I),quelNumDansCase(I,X,Arr).
 
 /*jouer(E,P):-maxValue(E,P,V),write(V).

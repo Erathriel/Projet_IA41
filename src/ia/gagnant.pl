@@ -5,9 +5,10 @@
 %	 16 17 18 19 20
 %	 21 22 23 24 25
 
-/* true si configuration gagnante */
-% gagnant(+P1,+P2,+P3,+P4)
-% les points doivent �tre dans l ordre croissant
+/* true si configuration gagnante
+gagnant(+P1,+P2,+P3,+P4)
+les points doivent �tre dans l ordre croissant
+*/
 
 gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_horizontal(A,B,C,D).				% ex : 10 8 9 7
 gagnant(P1,P2,P3,P4) :- sort([P1,P2,P3,P4],[A,B,C,D]), gagnant_vertical(A,B,C,D).				% ex : 14 19 9 4
