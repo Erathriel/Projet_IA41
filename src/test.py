@@ -207,13 +207,13 @@ class IA:
 
 
     def jouer(self,e,p):
-        v=self.MaxValue(e,p,10000000,-10000000)
+        v=self.MaxValue(e,p,-10000000,10000000)
         return v.getPlat();
     def MaxValue(self,e,p,alpha,beta):
         if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
             #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
             #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e)
-            return Resultat(self.evaluer(j,e),e);
+            return Resultat(self.evaluer(self.joueur,e),e);
         v=1000
         succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(self.joueur)+","+str(e)+",X)"))[0]
         plat=e
@@ -222,10 +222,10 @@ class IA:
             if(tmp.getVal()<v):
                 plat=s
             v=min(v,tmp.getVal())
-            if v<=beta:
+            if v>=beta:
                 #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s)
-                return Resultat((self.evaluer(self.joueur,e),e))
-            alpha=min(alpha,v)
+                return Resultat(self.evaluer(self.joueur,e),e)
+            alpha=max(alpha,v)
         return Resultat(v,plat)
 
     def MinValue(self,e,p,alpha,beta):
@@ -233,7 +233,7 @@ class IA:
         if p==0 or list(prolog.query("joueurGagnant("+str(e)+","+str(self.joueur)+")")):
             #return list(prolog.query("evaluationJoueur("+str(j)+","+str(e)+",X)"))[0]['X']
             #return Resultat(list(prolog.query("evaluation("+str(e)+",X)"))[0]['X'],e)
-            return Resultat(self.evaluer(j,e),e);
+            return Resultat(self.evaluer(self.joueur,e),e);
         v=-1000
         succ=list(prolog.query("effectuerTousLesDeplacementsJoueur("+str(aj)+","+str(e)+",X)"))[0]
         plat=e
@@ -242,7 +242,7 @@ class IA:
             if(tmp.getVal()>v):
                 plat=s
             v=max(v,tmp.getVal())
-            if v<=alpha:
+            if v>=alpha:
                 #return Resultat(list(prolog.query("evaluation("+str(s)+",X)"))[0]['X'],s)
                 return Resultat(self.evaluer(aj,e),s)
             beta=min(beta,v)
@@ -259,7 +259,7 @@ class IA:
     #recupere les indices des poins du joueur passe en parametre
     def getIndicesJoueur(self,joueur,plateauAEavaluer):
         listIndexJoueur=[]
-        for i in range(0,len(plateauAEavaluer)-1):
+        for i in range(0,len(plateauAEavaluer)):
             if(joueur==plateauAEavaluer[i]):
                 listIndexJoueur.append(i+1)
         return listIndexJoueur
@@ -275,7 +275,7 @@ class IA:
           listeCoordonnee=self.getCoordonnees(listIndex)
           #distance entre chaque points
           distance=0
-          for i in range(0,len(listeCoordonneeJ)-1):
+          for i in range(0,len(listeCoordonneeJ)):
               distance+=math.sqrt((listeCoordonnee[i][0] - listeCoordonneeJ[i][0])*(listeCoordonnee[i][0] - listeCoordonneeJ[i][0]) +(listeCoordonnee[i][1] - listeCoordonneeJ[i][1])*(listeCoordonnee[i][1] - listeCoordonneeJ[i][1]))
           if(eval >=distance):
               eval=distance
@@ -356,7 +356,7 @@ class Joueur:
                     rand = random.randint(0 ,24)
             else:
                 ia=IA(2)
-                self.board.plateau=ia.jouer(self.board.plateau,4)
+                self.board.plateau=ia.jouer(self.board.plateau,1)
                 self.board.display()
 
 def main():
